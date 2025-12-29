@@ -1,72 +1,211 @@
 <!DOCTYPE html>
-<html>
+<html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>La Ruota dell'Esperienza</title>
     <style>
-        body { background: #1a0f0d; color: white; text-align: center; font-family: sans-serif; margin: 0; padding-top: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; }
-        #wheel-wrap { position: relative; width: 320px; height: 320px; margin: 0 auto; border: 8px solid #5d4037; border-radius: 50%; box-shadow: 0 0 20px rgba(0,0,0,0.7); }
-        #arrow { position: absolute; top: -15px; left: 50%; transform: translateX(-50%); width: 0; height: 0; border-left: 15px solid transparent; border-right: 15px solid transparent; border-top: 30px solid #d4af37; z-index: 10; }
-        canvas { width: 100%; height: 100%; transition: transform 4s cubic-bezier(0.1, 0, 0.2, 1); border-radius: 50%; }
-        button { margin-top: 30px; padding: 15px 30px; background: #800020; color: gold; border: 2px solid gold; font-weight: bold; border-radius: 10px; font-size: 18px; cursor: pointer; }
-        #pop { display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%); width:80%; max-width:400px; background:white; color:black; padding:20px; border-radius:15px; z-index:100; box-shadow: 0 0 20px black; text-align: left; }
-        #pop h2 { color:#800020; margin-top:0; border-bottom: 1px solid #eee; padding-bottom: 10px; }
-        #pop div { font-size: 0.95rem; line-height: 1.5; }
-        #over { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:90; }
-        #pop button { width:100%; margin-top:15px; background:#5d4037; color:white; border:none; padding:10px; font-size:16px; }
+        :root {
+            --wood: #3e2723;
+            --gold: #d4af37;
+            --bg: #0a0a0a;
+        }
+
+        body {
+            background: var(--bg);
+            color: #fff;
+            font-family: 'Georgia', serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .wheel-container {
+            position: relative;
+            width: 90vw;
+            max-width: 450px;
+            aspect-ratio: 1/1;
+            border: 12px solid var(--wood);
+            border-radius: 50%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,0,0,0.5);
+        }
+
+        .arrow {
+            position: absolute;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0; height: 0;
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+            border-top: 35px solid var(--gold);
+            z-index: 100;
+            filter: drop-shadow(0 2px 5px #000);
+        }
+
+        canvas {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            transition: transform 5s cubic-bezier(0.15, 0, 0.15, 1);
+        }
+
+        button#spin-btn {
+            margin-top: 40px;
+            padding: 15px 40px;
+            background: var(--wood);
+            color: var(--gold);
+            border: 2px solid var(--gold);
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+        }
+
+        /* Popup Elegante */
+        #overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 900;
+        }
+
+        #modal {
+            display: none;
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85%;
+            max-width: 450px;
+            background: #1a1a1a;
+            color: #eee;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid var(--gold);
+            z-index: 1000;
+            text-align: left;
+            box-shadow: 0 0 40px var(--gold);
+        }
+
+        #modal h2 {
+            color: var(--gold);
+            margin-top: 0;
+            border-bottom: 1px solid var(--gold);
+            padding-bottom: 10px;
+            font-size: 1.5rem;
+        }
+
+        .section-title { color: var(--gold); font-weight: bold; margin-top: 10px; display: block; }
+        .warning { color: #ff5252; font-style: italic; font-size: 0.85rem; margin-top: 15px; border-top: 1px solid #444; padding-top: 10px; }
+
+        .close-btn {
+            background: var(--gold);
+            color: #000;
+            width: 100%;
+            padding: 12px;
+            border: none;
+            margin-top: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
-    <div id="wheel-wrap">
-        <div id="arrow"></div>
-        <canvas id="cvs" width="600" height="600"></canvas>
+
+    <div class="wheel-container">
+        <div class="arrow"></div>
+        <canvas id="wheel" width="800" height="800"></canvas>
     </div>
-    <button onclick="spin()">GIRA LA RUOTA</button>
-    <div id="over" onclick="hide()"></div>
-    <div id="pop">
-        <h2 id="t"></h2>
-        <div id="b"></div>
-        <button onclick="hide()">CHIUDI</button>
+
+    <button id="spin-btn" onclick="spinWheel()">Gira la Ruota</button>
+
+    <div id="overlay" onclick="closeModal()"></div>
+    <div id="modal">
+        <h2 id="m-title"></h2>
+        <div id="m-content"></div>
+        <button class="close-btn" onclick="closeModal()">COMINCIA</button>
     </div>
+
     <script>
-        const c = document.getElementById('cvs'), x = c.getContext('2d');
-        const items = [
-            {t:"1 Red Master", c:"#800020", d:"<b>Dressage:</b> Pizzo, tacchi, collarino nero (comodo).<br><b>Toys:</b> Manette, cavigliere, wand massager, dildo rabbit.<br><b>Act:</b> Preliminari, 2 posizioni legata."},
-            {t:"2 Blue Master", c:"#1a2a6c", d:"<b>Dressage:</b> Solo calze, da strappare.<br><b>Toys:</b> Corde, manette, cavigliere, Wand massager.<br><b>Act:</b> Preliminari, 1 posizione legata."},
-            {t:"3 Red Mistress", c:"#800020", d:"<b>Dressage:</b> Camicia, gonna di pelle, tacchi.<br><b>Toys:</b> Manette, cavigliere, Wand massager, plug anale, masturbatore pipo.<br><b>Act:</b> Masturbazione, adorazione dei piedi, cunnilingus, cowgirl."},
-            {t:"4 Pink Mistress", c:"#f48fb1", d:"<b>Dressage:</b> Erotico a piacere (catsuit o reggiseno/perizoma).<br><b>Toys:</b> Strapon, Wand massager, plug anale, masturbatore pipo, manette, cavigliere.<br><b>Act:</b> Pegging, cunnilingus, cowgirl.<br><b>Warning:</b> Se esce questa proposta prima dell'Anal Explorations, passare prima a quest'ultima."},
-            {t:"5 Anal Explorations", c:"#4e342e", d:"Sessione di esplorazione - pratica per lei per la stimolazione anale di lui."},
-            {t:"6 Pegging Vanilla", c:"#f48fb1", d:"Esperienza di inversione dei ruoli e sesso anale per lui, e sesso vanilla per lei.<br><b>Warning:</b> Se esce questa proposta prima dell'Anal Explorations, passare prima a quest'ultima."},
-            {t:"7 Foot Kink", c:"#d4af37", d:"Pedicure e smalto (facoltativi), decoro dei piedi con cavigliere, lacci, massaggio intenso e rilassante, adorazione dei piedi, leccarli e succhiare le dita (opzionale uso di panna/Nutella) sega coi piedi."}
+        const canvas = document.getElementById('wheel');
+        const ctx = canvas.getContext('2d');
+        
+        const sessions = [
+            { t: "Master Red", c: "#800020", d: "<span class='section-title'>Abbigliamento:</span> Completo in pizzo, tacchi, collarino nero.<br><span class='section-title'>Toys:</span> Manette, cavigliere, wand, dildo rabbit.<br><span class='section-title'>Act:</span> Preliminari, 2 posizioni legata." },
+            { t: "Master Blue", c: "#1a2a6c", d: "<span class='section-title'>Abbigliamento:</span> Solo calze, da strappare.<br><span class='section-title'>Toys:</span> Corde, manette, cavigliere, Wand.<br><span class='section-title'>Act:</span> Preliminari, 1 posizione legata." },
+            { t: "Mistress Red", c: "#4a0000", d: "<span class='section-title'>Abbigliamento:</span> Camicia, gonna di pelle, tacchi.<br><span class='section-title'>Toys:</span> Manette, cavigliere, Wand, plug, masturbatore pipo.<br><span class='section-title'>Act:</span> Masturbazione, adorazione piedi, cunnilingus, cowgirl." },
+            { t: "Mistress Pink", c: "#c2185b", d: "<span class='section-title'>Abbigliamento:</span> Catsuit o lingerie erotica.<br><span class='section-title'>Toys:</span> Strapon, Wand, plug, masturbatore, manette.<br><span class='section-title'>Act:</span> Pegging, cunnilingus, cowgirl.<br><p class='warning'>Warning: Se esce prima dell'Anal Exploration, passare prima a quest'ultima.</p>" },
+            { t: "Anal Expl.", c: "#3e2723", d: "Sessione di esplorazione - Pratica per lei per la stimolazione anale di lui." },
+            { t: "Pegging Van.", c: "#880e4f", d: "Inversione dei ruoli. Sesso anale per lui, sesso vanilla per lei.<br><p class='warning'>Warning: Se esce prima dell'Anal Exploration, passare prima a quest'ultima.</p>" },
+            { t: "Foot Kink", c: "#997a11", d: "<span class='section-title'>Dettagli:</span> Pedicure e smalto, cavigliere, lacci, massaggio intenso.<br><span class='section-title'>Act:</span> Adorazione piedi, leccarli e succhiare le dita (opz. panna/Nutella), sega coi piedi." }
         ];
-        const full = [...items, ...items];
-        let rot = 0;
-        function draw() {
-            x.clearRect(0,0,600,600);
-            full.forEach((it, i) => {
-                const ang = (Math.PI*2/14)*i;
-                x.beginPath(); x.fillStyle = it.c; x.moveTo(300,300);
-                x.arc(300,300,300,ang,ang+(Math.PI*2/14)); x.fill();
-                x.save(); x.translate(300,300); x.rotate(ang+(Math.PI*2/14)/2);
-                x.textAlign="right"; x.fillStyle=(it.c === "#f48fb1" || it.c === "#d4af37") ? "#000" : "#fff"; x.font="bold 20px serif";
-                x.fillText(it.t.split('(')[0], 280, 10); x.restore();
+
+        const prizes = [...sessions, ...sessions]; // 14 spicchi
+        const numSegments = prizes.length;
+        const arc = 2 * Math.PI / numSegments;
+        let currentRotation = 0;
+
+        function drawWheel() {
+            ctx.clearRect(0,0,800,800);
+            prizes.forEach((prize, i) => {
+                const angle = i * arc;
+                // Disegno Spicchio
+                ctx.beginPath();
+                ctx.fillStyle = prize.c;
+                ctx.moveTo(400, 400);
+                ctx.arc(400, 400, 390, angle, angle + arc);
+                ctx.lineTo(400, 400);
+                ctx.fill();
+                
+                // Bordo dorato sottile tra spicchi
+                ctx.strokeStyle = "#d4af37";
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                // Testo
+                ctx.save();
+                ctx.translate(400, 400);
+                ctx.rotate(angle + arc / 2);
+                ctx.textAlign = "right";
+                ctx.fillStyle = "#d4af37"; // Testo sempre oro
+                ctx.font = "bold 24px Georgia";
+                ctx.fillText(prize.t, 360, 10);
+                ctx.restore();
             });
         }
-        function spin() {
-            rot += Math.floor(Math.random()*360) + 1440;
-            c.style.transform = `rotate(${rot}deg)`;
+
+        function spinWheel() {
+            const extraDegrees = Math.floor(Math.random() * 360) + 1800; 
+            currentRotation += extraDegrees;
+            canvas.style.transform = `rotate(${currentRotation}deg)`;
+
             setTimeout(() => {
-                const idx = Math.floor(((360-(rot%360)+270)%360)/(360/14));
-                const w = full[idx];
-                document.getElementById('t').innerText = w.t;
-                document.getElementById('b').innerHTML = w.d; // Usiamo innerHTML per i tag bold e br
-                document.getElementById('pop').style.display = 'block';
-                document.getElementById('over').style.display = 'block';
-            }, 4100);
+                const actualDeg = currentRotation % 360;
+                const index = Math.floor(((360 - actualDeg + 270) % 360) / (360 / numSegments));
+                const win = prizes[index];
+                
+                document.getElementById('m-title').innerText = win.t;
+                document.getElementById('m-content').innerHTML = win.d;
+                document.getElementById('modal').style.display = 'block';
+                document.getElementById('overlay').style.display = 'block';
+            }, 5000);
         }
-        function hide() { document.getElementById('pop').style.display='none'; document.getElementById('over').style.display='none'; }
-        draw();
+
+        function closeModal() {
+            document.getElementById('modal').style.display = 'none';
+            document.getElementById('overlay').style.display = 'none';
+        }
+
+        drawWheel();
     </script>
 </body>
 </html>

@@ -69,7 +69,6 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
-        /* Popup Elegante */
         #overlay {
             display: none;
             position: fixed;
@@ -101,6 +100,7 @@
             border-bottom: 1px solid var(--gold);
             padding-bottom: 10px;
             font-size: 1.5rem;
+            text-align: center;
         }
 
         .section-title { color: var(--gold); font-weight: bold; margin-top: 10px; display: block; }
@@ -140,69 +140,88 @@
         const ctx = canvas.getContext('2d');
         
         const sessions = [
-            { t: "Master Red", c: "#800020", d: "<span class='section-title'>Abbigliamento:</span> Completo in pizzo, tacchi, collarino nero.<br><span class='section-title'>Toys:</span> Manette, cavigliere, wand, dildo rabbit.<br><span class='section-title'>Act:</span> Preliminari, 2 posizioni legata." },
-            { t: "Master Blue", c: "#1a2a6c", d: "<span class='section-title'>Abbigliamento:</span> Solo calze, da strappare.<br><span class='section-title'>Toys:</span> Corde, manette, cavigliere, Wand.<br><span class='section-title'>Act:</span> Preliminari, 1 posizione legata." },
-            { t: "Mistress Red", c: "#4a0000", d: "<span class='section-title'>Abbigliamento:</span> Camicia, gonna di pelle, tacchi.<br><span class='section-title'>Toys:</span> Manette, cavigliere, Wand, plug, masturbatore pipo.<br><span class='section-title'>Act:</span> Masturbazione, adorazione piedi, cunnilingus, cowgirl." },
-            { t: "Mistress Pink", c: "#c2185b", d: "<span class='section-title'>Abbigliamento:</span> Catsuit o lingerie erotica.<br><span class='section-title'>Toys:</span> Strapon, Wand, plug, masturbatore, manette.<br><span class='section-title'>Act:</span> Pegging, cunnilingus, cowgirl.<br><p class='warning'>Warning: Se esce prima dell'Anal Exploration, passare prima a quest'ultima.</p>" },
-            { t: "Anal Expl.", c: "#3e2723", d: "Sessione di esplorazione - Pratica per lei per la stimolazione anale di lui." },
-            { t: "Pegging Van.", c: "#880e4f", d: "Inversione dei ruoli. Sesso anale per lui, sesso vanilla per lei.<br><p class='warning'>Warning: Se esce prima dell'Anal Exploration, passare prima a quest'ultima.</p>" },
-            { t: "Foot Kink", c: "#997a11", d: "<span class='section-title'>Dettagli:</span> Pedicure e smalto, cavigliere, lacci, massaggio intenso.<br><span class='section-title'>Act:</span> Adorazione piedi, leccarli e succhiare le dita (opz. panna/Nutella), sega coi piedi." }
+            { t: "Master - Red Room", c: "#800020", d: "<span class='section-title'>Abbigliamento:</span> Completo in pizzo, tacchi, collarino nero (comodo).<br><span class='section-title'>Toys:</span> Manette, cavigliere, wand massager, dildo rabbit.<br><span class='section-title'>Act:</span> Preliminari, 2 posizioni legata." },
+            { t: "Master - Blue Room", c: "#1a2a6c", d: "<span class='section-title'>Abbigliamento:</span> Solo calze, da strappare.<br><span class='section-title'>Toys:</span> Corde, manette, cavigliere, Wand massager.<br><span class='section-title'>Act:</span> Preliminari, 1 posizione legata." },
+            { t: "Mistress - Red Room", c: "#4a0000", d: "<span class='section-title'>Abbigliamento:</span> Camicia, gonna di pelle, tacchi.<br><span class='section-title'>Toys:</span> Manette, cavigliere, Wand massager, plug anale, masturbatore pipo.<br><span class='section-title'>Act esempi:</span> Masturbazione, adorazione dei piedi, cunnilingus, cowgirl." },
+            { t: "Mistress - Pink Room", c: "#c2185b", d: "<span class='section-title'>Abbigliamento:</span> Erotico a piacere tipo catsuit o reggiseno/perizoma.<br><span class='section-title'>Toys:</span> Strapon, Wand massager, plug anale, masturbatore pipo, manette, cavigliere.<br><span class='section-title'>Act esempi:</span> Pegging, cunnilingus, cowgirl.<br><p class='warning'>Warning: Se esce questa proposta prima dell'anal explorations, passare prima a quest'ultima.</p>" },
+            { t: "Anal Explorations", c: "#3e2723", d: "Sessione di esplorazione - Pratica per lei per la stimolazione anale di lui." },
+            { t: "Pegging - Vanilla", c: "#880e4f", d: "Esperienza di inversione dei ruoli e sesso anale per lui, e sesso vanilla per lei.<br><p class='warning'>Warning: Se esce questa proposta prima dell'anal explorations, passare prima a quest'ultima.</p>" },
+            { t: "Foot Kink", c: "#997a11", d: "<span class='section-title'>Dettagli:</span> Pedicure e smalto, decoro dei piedi con cavigliere, lacci, massaggio intenso e rilassante.<br><span class='section-title'>Act:</span> Adorazione dei piedi, leccarli e succhiare le dita (opzionale uso di panna/Nutella) sega coi piedi." }
         ];
 
-        const prizes = [...sessions, ...sessions]; // 14 spicchi
+        const prizes = [...sessions, ...sessions];
         const numSegments = prizes.length;
         const arc = 2 * Math.PI / numSegments;
         let currentRotation = 0;
+        let isSpinning = false;
 
-        function drawWheel() {
+        // Disegna la ruota (inizialmente senza testi)
+        function drawWheel(revealedIndex = null) {
             ctx.clearRect(0,0,800,800);
             prizes.forEach((prize, i) => {
                 const angle = i * arc;
-                // Disegno Spicchio
                 ctx.beginPath();
                 ctx.fillStyle = prize.c;
                 ctx.moveTo(400, 400);
-                ctx.arc(400, 400, 390, angle, angle + arc);
+                ctx.arc(400, 400, 395, angle, angle + arc);
                 ctx.lineTo(400, 400);
                 ctx.fill();
                 
-                // Bordo dorato sottile tra spicchi
-                ctx.strokeStyle = "#d4af37";
+                ctx.strokeStyle = "rgba(212, 175, 55, 0.4)";
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Testo
-                ctx.save();
-                ctx.translate(400, 400);
-                ctx.rotate(angle + arc / 2);
-                ctx.textAlign = "right";
-                ctx.fillStyle = "#d4af37"; // Testo sempre oro
-                ctx.font = "bold 24px Georgia";
-                ctx.fillText(prize.t, 360, 10);
-                ctx.restore();
+                // Mostra il testo solo se l'indice è quello rivelato
+                if (revealedIndex !== null && i === revealedIndex) {
+                    ctx.save();
+                    ctx.translate(400, 400);
+                    ctx.rotate(angle + arc / 2);
+                    ctx.textAlign = "right";
+                    ctx.fillStyle = "#d4af37";
+                    ctx.font = "bold 28px Georgia";
+                    ctx.fillText(prize.t, 370, 10);
+                    ctx.restore();
+                }
             });
         }
 
         function spinWheel() {
+            if (isSpinning) return;
+            
+            // Reset scritte prima di ogni giro
+            drawWheel(null); 
+            
+            isSpinning = true;
             const extraDegrees = Math.floor(Math.random() * 360) + 1800; 
             currentRotation += extraDegrees;
             canvas.style.transform = `rotate(${currentRotation}deg)`;
 
             setTimeout(() => {
+                isSpinning = false;
                 const actualDeg = currentRotation % 360;
+                // Calcolo indice vincente
                 const index = Math.floor(((360 - actualDeg + 270) % 360) / (360 / numSegments));
                 const win = prizes[index];
                 
-                document.getElementById('m-title').innerText = win.t;
-                document.getElementById('m-content').innerHTML = win.d;
-                document.getElementById('modal').style.display = 'block';
-                document.getElementById('overlay').style.display = 'block';
+                // 1. Rivela la scritta sullo spicchio
+                drawWheel(index);
+
+                // 2. Dopo 1 secondo, apri il popup con i dettagli
+                setTimeout(() => {
+                    document.getElementById('m-title').innerText = win.t;
+                    document.getElementById('m-content').innerHTML = win.d;
+                    document.getElementById('modal').style.display = 'block';
+                    document.getElementById('overlay').style.display = 'block';
+                }, 1000);
+
             }, 5000);
         }
 
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
+            // Opzionale: pulisci la scritta sulla ruota dopo aver chiuso
+            // drawWheel(null); 
         }
 
         drawWheel();

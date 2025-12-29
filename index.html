@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>La Ruota dell'Esperienza</title>
+    <title>Fantasy Wheel</title>
     <style>
         :root {
             --wood: #3e2723;
@@ -21,30 +21,40 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            overflow: hidden;
+            overflow-x: hidden;
+        }
+
+        h1.main-title {
+            color: var(--gold);
+            font-family: 'Times New Roman', serif;
+            font-size: 2.5rem;
+            font-style: italic;
+            margin-bottom: 20px;
+            text-transform: capitalize;
+            letter-spacing: 3px;
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5);
         }
 
         .wheel-container {
             position: relative;
-            width: 90vw;
-            max-width: 450px;
+            width: 85vw;
+            max-width: 420px;
             aspect-ratio: 1/1;
-            border: 12px solid var(--wood);
+            border: 10px solid var(--wood);
             border-radius: 50%;
             box-shadow: 0 0 50px rgba(0,0,0,0.9), inset 0 0 20px rgba(0,0,0,0.5);
         }
 
         .arrow {
             position: absolute;
-            top: -25px;
+            top: -20px;
             left: 50%;
             transform: translateX(-50%);
             width: 0; height: 0;
-            border-left: 18px solid transparent;
-            border-right: 18px solid transparent;
-            border-top: 35px solid var(--gold);
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-top: 30px solid var(--gold);
             z-index: 100;
-            filter: drop-shadow(0 2px 5px #000);
         }
 
         canvas {
@@ -55,18 +65,17 @@
         }
 
         button#spin-btn {
-            margin-top: 40px;
-            padding: 15px 40px;
+            margin-top: 30px;
+            padding: 12px 35px;
             background: var(--wood);
             color: var(--gold);
-            border: 2px solid var(--gold);
-            font-size: 1.2rem;
+            border: 1px solid var(--gold);
+            font-size: 1.1rem;
             font-weight: bold;
             text-transform: uppercase;
             letter-spacing: 2px;
-            border-radius: 8px;
+            border-radius: 4px;
             cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.5);
         }
 
         #overlay {
@@ -83,28 +92,29 @@
             top: 50%; left: 50%;
             transform: translate(-50%, -50%);
             width: 85%;
-            max-width: 450px;
-            background: #1a1a1a;
+            max-width: 420px;
+            max-height: 85vh;
+            overflow-y: auto;
+            background: #151515;
             color: #eee;
-            padding: 30px;
-            border-radius: 15px;
-            border: 2px solid var(--gold);
+            padding: 25px;
+            border-radius: 10px;
+            border: 1px solid var(--gold);
             z-index: 1000;
             text-align: left;
-            box-shadow: 0 0 40px var(--gold);
         }
 
         #modal h2 {
             color: var(--gold);
             margin-top: 0;
-            border-bottom: 1px solid var(--gold);
-            padding-bottom: 10px;
-            font-size: 1.5rem;
             text-align: center;
+            border-bottom: 1px solid #333;
+            padding-bottom: 10px;
         }
 
-        .section-title { color: var(--gold); font-weight: bold; margin-top: 10px; display: block; }
-        .warning { color: #ff5252; font-style: italic; font-size: 0.85rem; margin-top: 15px; border-top: 1px solid #444; padding-top: 10px; }
+        .section-title { color: var(--gold); font-weight: bold; margin-top: 12px; display: block; font-size: 0.9rem; text-transform: uppercase; }
+        .description-text { margin-top: 15px; font-style: italic; color: #ccc; border-top: 1px solid #333; padding-top: 10px; line-height: 1.4; }
+        .warning { color: #ff5252; font-style: italic; font-size: 0.85rem; margin-top: 10px; }
 
         .close-btn {
             background: var(--gold);
@@ -113,20 +123,21 @@
             padding: 12px;
             border: none;
             margin-top: 20px;
-            border-radius: 5px;
+            border-radius: 4px;
             font-weight: bold;
-            cursor: pointer;
         }
     </style>
 </head>
 <body>
+
+    <h1 class="main-title">Fantasy Wheel</h1>
 
     <div class="wheel-container">
         <div class="arrow"></div>
         <canvas id="wheel" width="800" height="800"></canvas>
     </div>
 
-    <button id="spin-btn" onclick="spinWheel()">Gira la Ruota</button>
+    <button id="spin-btn" onclick="spinWheel()">Svela la Fantasia</button>
 
     <div id="overlay" onclick="closeModal()"></div>
     <div id="modal">
@@ -140,13 +151,13 @@
         const ctx = canvas.getContext('2d');
         
         const sessions = [
-            { t: "Master - Red Room", c: "#800020", d: "<span class='section-title'>Abbigliamento:</span> Completo in pizzo, tacchi, collarino nero (comodo).<br><span class='section-title'>Toys:</span> Manette, cavigliere, wand massager, dildo rabbit.<br><span class='section-title'>Act:</span> Preliminari, 2 posizioni legata." },
-            { t: "Master - Blue Room", c: "#1a2a6c", d: "<span class='section-title'>Abbigliamento:</span> Solo calze, da strappare.<br><span class='section-title'>Toys:</span> Corde, manette, cavigliere, Wand massager.<br><span class='section-title'>Act:</span> Preliminari, 1 posizione legata." },
-            { t: "Mistress - Red Room", c: "#4a0000", d: "<span class='section-title'>Abbigliamento:</span> Camicia, gonna di pelle, tacchi.<br><span class='section-title'>Toys:</span> Manette, cavigliere, Wand massager, plug anale, masturbatore pipo.<br><span class='section-title'>Act esempi:</span> Masturbazione, adorazione dei piedi, cunnilingus, cowgirl." },
-            { t: "Mistress - Pink Room", c: "#c2185b", d: "<span class='section-title'>Abbigliamento:</span> Erotico a piacere tipo catsuit o reggiseno/perizoma.<br><span class='section-title'>Toys:</span> Strapon, Wand massager, plug anale, masturbatore pipo, manette, cavigliere.<br><span class='section-title'>Act esempi:</span> Pegging, cunnilingus, cowgirl.<br><p class='warning'>Warning: Se esce questa proposta prima dell'anal explorations, passare prima a quest'ultima.</p>" },
-            { t: "Anal Explorations", c: "#3e2723", d: "Sessione di esplorazione - Pratica per lei per la stimolazione anale di lui." },
-            { t: "Pegging - Vanilla", c: "#880e4f", d: "Esperienza di inversione dei ruoli e sesso anale per lui, e sesso vanilla per lei.<br><p class='warning'>Warning: Se esce questa proposta prima dell'anal explorations, passare prima a quest'ultima.</p>" },
-            { t: "Foot Kink", c: "#997a11", d: "<span class='section-title'>Dettagli:</span> Pedicure e smalto, decoro dei piedi con cavigliere, lacci, massaggio intenso e rilassante.<br><span class='section-title'>Act:</span> Adorazione dei piedi, leccarli e succhiare le dita (opzionale uso di panna/Nutella) sega coi piedi." }
+            { t: "Master - Red Room", c: "#800020", d: "<span class='section-title'>Abbigliamento:</span> Completo in pizzo, tacchi, collarino nero.<br><span class='section-title'>Toys:</span> Manette, cavigliere, wand massager, dildo rabbit.<br><span class='section-title'>Act:</span> Preliminari, 2 posizioni legata.<div class='description-text'><b>Descrizione:</b> WOW! Sei fortunata, questa è in assoluto la fantasia più piccante ma devi essere pronta! Servirà tempo per questa fantasia, dovrai lasciarti completamente andare e lasciarti guidare nel piacere. Dovrai volerlo.</div>" },
+            { t: "Master - Blue Room", c: "#1a2a6c", d: "<span class='section-title'>Abbigliamento:</span> Solo calze, da strappare.<br><span class='section-title'>Toys:</span> Corde, manette, cavigliere, Wand massager.<br><span class='section-title'>Act:</span> Preliminari, 1 posizione legata.<div class='description-text'><b>Descrizione:</b> Esperienza dalla durata media, ma non per questo meno spicy. C'è poco da dire, sciogli i capelli, indossa solo un paio di calze e dimmi: ti voglio.</div>" },
+            { t: "Mistress - Red Room", c: "#4a0000", d: "<span class='section-title'>Abbigliamento:</span> Camicia, gonna di pelle, tacchi.<br><span class='section-title'>Toys:</span> Manette, cavigliere, Wand massager, plug anale, masturbatore pipo.<br><span class='section-title'>Act:</span> Masturbazione, adorazione dei piedi, cunnilingus, cowgirl.<div class='description-text'><b>Descrizione:</b> OMG!! Questa si che è un' esperienza! È il tuo turno, ora hai tu le redini in mano. Indossa qualcosa che ti dia un look dominante e sbizzarrisciti con la fantasia. Usami come vuoi per il tuo piacere e solo se lo vuoi anche per il mio.</div>" },
+            { t: "Mistress - Pink Room", c: "#c2185b", d: "<span class='section-title'>Abbigliamento:</span> Erotico a piacere tipo catsuit o lingerie.<br><span class='section-title'>Toys:</span> Strapon, Wand massager, plug, masturbatore, manette.<br><span class='section-title'>Act:</span> Pegging, cunnilingus, cowgirl.<p class='warning'>Warning: Se esce questa proposta prima dell'anal explorations, passare prima a quest'ultima.</p><div class='description-text'><b>Descrizione:</b> Oh si! Questa è molto piccante, diciamo che è pensata per un grado avanzato di competenze nel uso del pipo, magari devi fare pratica!</div>" },
+            { t: "Anal Explorations", c: "#3e2723", d: "<span class='section-title'>Act:</span> Sessione di esplorazione - pratica per lei per la stimolazione anale di lui.<div class='description-text'><b>Descrizione:</b> Per questa esperienza ci vuole un po' di tranquillità e prendersi il tempo necessario. Ci serve per prendere un po' le misure tra noi!</div>" },
+            { t: "Pegging - Vanilla", c: "#880e4f", d: "<span class='section-title'>Act:</span> Inversione dei ruoli e sesso anale per lui, sesso vanilla per lei.<p class='warning'>Warning: Se esce questa proposta prima dell'anal explorations, passare prima a quest'ultima.</p><div class='description-text'><b>Descrizione:</b> Questa è una grande fantasia, magari con un po' di pratica ci riusciamo a divertire insieme!</div>" },
+            { t: "Foot Kink", c: "#997a11", d: "<span class='section-title'>Act:</span> Pedicure/smalto (facoltativi), cavigliere, lacci, massaggio rilassante, adorazione dei piedi, leccarli/succhiare le dita, sega coi piedi.<div class='description-text'><b>Descrizione:</b> I know you know, mi piacciono i piedi, questa esperienza è pensata da un lato per rilassarti con un massaggio, dall' altro per farmi adorare i tuoi piedini!</div>" }
         ];
 
         const prizes = [...sessions, ...sessions];
@@ -155,7 +166,6 @@
         let currentRotation = 0;
         let isSpinning = false;
 
-        // Disegna la ruota (inizialmente senza testi)
         function drawWheel(revealedIndex = null) {
             ctx.clearRect(0,0,800,800);
             prizes.forEach((prize, i) => {
@@ -166,20 +176,18 @@
                 ctx.arc(400, 400, 395, angle, angle + arc);
                 ctx.lineTo(400, 400);
                 ctx.fill();
-                
                 ctx.strokeStyle = "rgba(212, 175, 55, 0.4)";
                 ctx.lineWidth = 2;
                 ctx.stroke();
 
-                // Mostra il testo solo se l'indice è quello rivelato
                 if (revealedIndex !== null && i === revealedIndex) {
                     ctx.save();
                     ctx.translate(400, 400);
                     ctx.rotate(angle + arc / 2);
                     ctx.textAlign = "right";
                     ctx.fillStyle = "#d4af37";
-                    ctx.font = "bold 28px Georgia";
-                    ctx.fillText(prize.t, 370, 10);
+                    ctx.font = "bold 26px Georgia";
+                    ctx.fillText(prize.t, 375, 10);
                     ctx.restore();
                 }
             });
@@ -187,10 +195,7 @@
 
         function spinWheel() {
             if (isSpinning) return;
-            
-            // Reset scritte prima di ogni giro
-            drawWheel(null); 
-            
+            drawWheel(null);
             isSpinning = true;
             const extraDegrees = Math.floor(Math.random() * 360) + 1800; 
             currentRotation += extraDegrees;
@@ -199,29 +204,23 @@
             setTimeout(() => {
                 isSpinning = false;
                 const actualDeg = currentRotation % 360;
-                // Calcolo indice vincente
                 const index = Math.floor(((360 - actualDeg + 270) % 360) / (360 / numSegments));
                 const win = prizes[index];
                 
-                // 1. Rivela la scritta sullo spicchio
                 drawWheel(index);
 
-                // 2. Dopo 1 secondo, apri il popup con i dettagli
                 setTimeout(() => {
                     document.getElementById('m-title').innerText = win.t;
                     document.getElementById('m-content').innerHTML = win.d;
                     document.getElementById('modal').style.display = 'block';
                     document.getElementById('overlay').style.display = 'block';
                 }, 1000);
-
             }, 5000);
         }
 
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
             document.getElementById('overlay').style.display = 'none';
-            // Opzionale: pulisci la scritta sulla ruota dopo aver chiuso
-            // drawWheel(null); 
         }
 
         drawWheel();
